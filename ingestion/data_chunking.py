@@ -5,7 +5,7 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Document
 from llama_index.core.schema import BaseNode
 
-logger = logging.getLogger('data_loading')
+logger = logging.getLogger('data_ingestion')
 
 def chunk_data(documents: list[Document], model: str) -> list[BaseNode]:
 
