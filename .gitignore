@@ -1,2 +1,3 @@
 data_sources/
 __pycache__/
+.env
