@@ -29,7 +29,7 @@ def read_wikipedia_article(wiki_path: str) -> list[Document]:
     return processed_articles
 
 
-def load_data(data_dir: str, wiki_path: str) -> None:
+def load_data(data_dir: str, wiki_path: str) -> list[Document]:
     documents = read_local_documents(data_dir)
     documents.extend(read_wikipedia_article(wiki_path))
     return documents
