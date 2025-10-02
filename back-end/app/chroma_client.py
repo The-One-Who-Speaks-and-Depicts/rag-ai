@@ -5,9 +5,9 @@ import os
 
 # Initialize a persistent client
 chroma_client = chromadb.PersistentClient(
-    path="./persistence", # Path to your persisted index directory
+    path=os.getenv("PERSISTENCE_DIR"), # Path to your persisted index directory
     settings=Settings(allow_reset=True)
 )
 
 # Get the collection you created and evaluated
-collection = chroma_client.get_collection(name="your_collection_name") # Use your actual collection name
+collection = chroma_client.get_collection(name=os.getenv("COLLECTION_NAME")) # Use your actual collection name
