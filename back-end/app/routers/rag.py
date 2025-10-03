@@ -1,29 +1,40 @@
 # app/routers/rag.py
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from app.chroma_client import collection
-import openai  # We still use the openai package, but configured for DeepSeek
+from openai import OpenAI  # Import the new client
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent / '.env')
 
-# Configure the OpenAI client to use DeepSeek's API
-openai.api_key = os.getenv("DEEPSEEK_API_KEY")
-openai.api_base = "https://api.deepseek.com/v1"  # DeepSeek's API endpoint
+# Initialize the new OpenAI client configured for DeepSeek
+client = OpenAI(
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    base_url="https://api.deepseek.com/v1"  # DeepSeek's API endpoint
+)
 
 router = APIRouter(prefix="/rag", tags=["RAG"])
 
+# Define the request model
+class QueryRequest(BaseModel):
+    user_query: str
+
 @router.post("/query")
-async def query_rag_system(user_query: str):
+async def query_rag_system(request: QueryRequest):
     """
     Endpoint to handle a user query, search ChromaDB, and generate an answer using DeepSeek.
     """
+    
+    # Extract the query from the request body
+    user_query = request.user_query
     
     # 1. Search for relevant context in ChromaDB
     try:
         results = collection.query(
             query_texts=[user_query],
-            n_results=3  # Number of context chunks to retrieve
+            n_results=3
         )
         context = "\n\n".join(results['documents'][0])
     except Exception as e:
@@ -39,18 +50,18 @@ Question: {user_query}
 
 Answer:"""
     
-    # 3. Call the DeepSeek API
+    # 3. Call the DeepSeek API using the new SDK
     try:
-        response = openai.ChatCompletion.create(
-            model="deepseek-chat",  # Use the appropriate DeepSeek model
+        response = client.chat.completions.create(
+            model="deepseek-chat",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that provides accurate answers based on the given context."},
                 {"role": "user", "content": prompt}
             ],
-            temperature=0.1,  # Low temperature for factual answers
-            stream=False  # Set to True if you want streaming responses
+            temperature=0.1,
+            stream=False
         )
-        answer = response.choices[0].message['content']
+        answer = response.choices[0].message.content  # Note: .content instead of ['content']
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"DeepSeek API error: {str(e)}")
 

@@ -2,8 +2,16 @@
 import chromadb
 import os
 
+from pathlib import Path
+from dotenv import load_dotenv
+
+
+
 def get_chroma_collection():
     """Initialize and return the ChromaDB collection with proper error handling."""
+    env_path = Path(__file__).parent.parent / '.env'
+    load_dotenv(env_path)
+
     try:
         # Initialize a persistent client
         chroma_client = chromadb.PersistentClient(
