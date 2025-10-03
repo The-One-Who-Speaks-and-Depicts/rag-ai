@@ -1,7 +1,3 @@
-import os
-from dotenv import load_dotenv
-from pathlib import Path
-
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from app.chroma_client import collection
