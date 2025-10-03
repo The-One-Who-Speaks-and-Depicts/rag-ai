@@ -1,25 +1,21 @@
 # app/chroma_client.py
 import chromadb
-import os
 
-from pathlib import Path
-from dotenv import load_dotenv
-
+from app.config import get_config
 
 
 def get_chroma_collection():
     """Initialize and return the ChromaDB collection with proper error handling."""
-    env_path = Path(__file__).parent.parent / '.env'
-    load_dotenv(env_path)
-
+    config = get_config()
     try:
         # Initialize a persistent client
         chroma_client = chromadb.PersistentClient(
-            path=os.getenv("PERSISTENCE_DIR")
+            path=config.chroma.persistence_path
         )
         
+        # WTF DUDE????????????????????????????????
         # Get collection name from environment or use default
-        collection_name = os.getenv("COLLECTION_NAME")
+        collection_name = config.chroma.collection_name
         if not collection_name:
             # List available collections to help debug
             collections = chroma_client.list_collections()

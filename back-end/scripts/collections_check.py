@@ -1,15 +1,10 @@
-import os
-import logging
-
 import chromadb
 
-from pathlib import Path
-from dotenv import load_dotenv
+from app.config import get_config
 
 def main():
-    env_path = Path(__file__).parent.parent / '.env'
-    load_dotenv(env_path)
-    persistence_dir_path = os.getenv("PERSISTENCE_DIR")
+    config = get_config()
+    persistence_dir_path = config.chroma.persistence_path
     chroma_client = chromadb.PersistentClient(path=persistence_dir_path)
     collections = chroma_client.list_collections()
     print("Available collections:")

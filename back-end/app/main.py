@@ -1,6 +1,5 @@
-# app/main.py
 from fastapi import FastAPI
-from app.routers import rag  # Import your router
+from app.routers import rag
 
 app = FastAPI(title="RAG Backend API", version="0.1.0")
 

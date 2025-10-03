@@ -1,17 +1,19 @@
-# app/routers/rag.py
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from app.chroma_client import collection
-from openai import OpenAI  # Import the new client
 import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-load_dotenv(Path(__file__).parent.parent / '.env')
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from app.chroma_client import collection
+from openai import OpenAI  # Import the new client
+
+from app.config import get_config
+
+config = get_config()
 
 # Initialize the new OpenAI client configured for DeepSeek
 client = OpenAI(
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=config.deepseek.api_key,
     base_url="https://api.deepseek.com/v1"  # DeepSeek's API endpoint
 )
 
@@ -48,9 +50,9 @@ Context:
 
 Question: {user_query}
 
-Answer:"""
-    
-    # 3. Call the DeepSeek API using the new SDK
+Answer:
+"""
+
     try:
         response = client.chat.completions.create(
             model="deepseek-chat",
@@ -65,7 +67,7 @@ Answer:"""
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"DeepSeek API error: {str(e)}")
 
-    # 4. Return the answer
+
     return {
         "answer": answer, 
         "context_snippets": results['documents'][0],
