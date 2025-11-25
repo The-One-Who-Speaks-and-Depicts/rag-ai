@@ -1,2 +1,5 @@
 data_sources/
 __pycache__/
+.env
+# ignores automatically created databases
+chroma.sqlite3

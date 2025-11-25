@@ -12,7 +12,7 @@ logger = logging.getLogger('data_ingestion')
 
 def create_index(nodes: list[BaseNode], model_name: str, chroma_db_path: str, persist_dir: str) -> None:
     chroma_client = chromadb.PersistentClient(path=chroma_db_path)
-    chroma_collection = chroma_client.get_or_create_collection("main_database")
+    chroma_collection = chroma_client.get_or_create_collection("megaraptora_db")
 
     vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
